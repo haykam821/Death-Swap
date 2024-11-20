@@ -14,7 +14,6 @@ import net.minecraft.entity.boss.BossBar;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Vec3d;
 import xyz.nucleoid.plasmid.game.common.GlobalWidgets;
 import xyz.nucleoid.plasmid.game.common.widget.BossBarWidget;
 
@@ -55,23 +54,22 @@ public class DeathSwapTimer {
 
 	private void swap() {
 		// Collect new positions for each player
-		List<Vec3d> positions = new ArrayList<>(this.phase.getPlayers().size());
+		List<SwapData> swapData = new ArrayList<>(this.phase.getPlayers().size());
 
 		ServerPlayerEntity previousPlayer = Iterables.getLast(this.phase.getPlayers());
-		positions.add(previousPlayer.getPos());
+		swapData.add(SwapData.from(previousPlayer));
 		
 		for (ServerPlayerEntity player : this.phase.getPlayers()) {
 			// Ensure positions are off by one
 			if (player != previousPlayer) {
-				positions.add(player.getPos());
+				swapData.add(SwapData.from(player));
 			}
 		}
 
 		// Teleport players to their new positions
 		int index = 0;
 		for (ServerPlayerEntity player : this.phase.getPlayers()) {
-			Vec3d position = positions.get(index);
-			player.teleport(position.getX(), position.getY(), position.getZ());
+			swapData.get(index).apply(player);
 
 			Text message = Text.translatable("text.deathswap.timer.swap", previousPlayer.getDisplayName()).formatted(NO_SWAP_FORMATTING);
 			player.sendMessage(message, true);
