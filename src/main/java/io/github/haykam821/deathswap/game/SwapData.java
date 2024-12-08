@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
 public record SwapData(Vec3d pos, Entity vehicle, List<Entity> passengers) {
 	public void apply(ServerPlayerEntity player) {
 		player.stopRiding();
-		player.teleport(this.pos.getX(), this.pos.getY(), this.pos.getZ());
+		player.teleport(this.pos.getX(), this.pos.getY(), this.pos.getZ(), false);
 
 		if (this.vehicle != null) {
 			player.startRiding(this.vehicle, true);
